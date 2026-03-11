@@ -1,0 +1,14 @@
+# Şifreler
+.env
+backend/.env
+frontend/.env
+
+# Python (Senin Taraf)
+__pycache__/
+*.pyc
+venv/
+backend/venv/
+
+# Node.js / React (Arkadaşının Tarafı)
+node_modules/
+frontend/node_modules/
