@@ -9,10 +9,10 @@
 Unlike simple chatbots, **DataWhisperer uses an Agentic Loop**.  
 When a user asks a question, the AI (**Llama 3.3 70B**) doesn't just guess an answer. It:
 
-1. **Reasons** about the intent of the question  
-2. **Decides** which internal API tool is required  
-3. **Executes** a live database call  
-4. **Synthesizes** the raw JSON results into a natural, human-readable insight  
+1. **Reasons** about the intent of the question by mapping it to a dynamically discovered database schema.
+2. **Generates** and safely executes raw read-only SQL queries natively against your data.
+3. **Retrieves** a live database result.
+4. **Synthesizes** the raw JSON results into a natural, human-readable insight. 
 
 ---
 
@@ -20,16 +20,17 @@ When a user asks a question, the AI (**Llama 3.3 70B**) doesn't just guess an an
 
 ## Backend
 
-- **FastAPI** — High-performance Python framework for the core API
-- **Groq SDK** — Lightning-fast inference using Llama 3.3 70B
-- **SQLAlchemy** — Robust ORM for PostgreSQL / Neon database management
-- **Pydantic** — Strict data validation and settings management
+- **FastAPI** — High-performance Python framework for the synchronously secure core API.
+- **Groq SDK** — Lightning-fast inference using Llama 3.3 70B.
+- **SQLAlchemy** — Robust ORM for PostgreSQL / Neon database management and universal schema discovery.
+- **Pydantic & Jose JWT** — Strict data validation and fully integrated OAuth2 access token security.
 
 ## Frontend
 
-- **Next.js 14** — React framework for a seamless server-side rendered dashboard
-- **Tailwind CSS** — Professional "Antigravity" dark-mode styling
-- **Lucide React** — Clean, consistent iconography
+- **Next.js 14** — React framework for a seamless server-side rendered dashboard.
+- **Tailwind CSS** — Professional "Antigravity" dark-mode styling.
+- **NextAuth.js** — Robust and fully-managed user authentication integrated with the FastAPI backend.
+- **Lucide React** — Clean, consistent iconography.
 
 ---
 
@@ -40,16 +41,16 @@ Ask questions like:
 
 > *"Which city has the highest 1-star reviews?"*
 
-and get instant answers.
+and get instant answers powered by dynamic, live-generated SQL.
+
+### Secure & Read-Only AI Interactions
+The agent respects a synchronized sandbox, guaranteeing that all generated SQL code is strictly verified as `SELECT` operations only, preventing destructive queries.
 
 ### Real-Time Monitoring
 Track success rates and processing times through a sleek visual dashboard.
 
-### Tool-Calling Architecture
-Extensible system for adding new data transformation and retrieval tools.
-
 ### Secure Infrastructure
-Environment-based configuration for API keys and database credentials.
+Environment-based configuration for API keys, secure secret management, and robust JWT session validation.
 
 ---
 
@@ -60,6 +61,7 @@ Environment-based configuration for API keys and database credentials.
 - Python **3.12+** (Optimized for Python 3.14 compatibility)
 - Node.js **18+**
 - A **Groq API Key**
+- A deployed conversational **PostgreSQL** database (e.g., Neon)
 
 ---
 
@@ -80,6 +82,7 @@ pip install -r requirements.txt
 # Create a .env file containing:
 # GROQ_API_KEY=your_key
 # DATABASE_URL=your_database_url
+# JWT_SECRET_KEY=your_secure_secret_hash
 
 uvicorn app.main:app --reload
 ```
@@ -93,6 +96,11 @@ cd frontend
 
 npm install
 
+# Create a .env.local file containing your FastAPI URL and NextAuth secret
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+# NEXTAUTH_SECRET=your_nextauth_secret_hash
+# NEXTAUTH_URL=http://localhost:3000
+
 npm run dev
 ```
 
@@ -100,9 +108,9 @@ npm run dev
 
 # 📊 Roadmap
 
-- [x] Core Agentic Loop & Tool Calling  
+- [x] Core Agentic Loop & Dynamic SQL Tool Calling  
 - [x] FastAPI & Next.js Integration  
-- [ ] NextAuth.js User Authentication  
+- [x] JWT Backend & NextAuth.js User Authentication  
 - [ ] Real-time Data Visualization (Recharts)  
 - [ ] Multi-tenant Team Management  
 

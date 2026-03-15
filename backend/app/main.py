@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.database.session import engine, Base
 from app.api import routes, auth
-from app.services.whisperer import ask_whisperer
+from app.api.v1.endpoints import chat as chat_router
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -26,21 +26,9 @@ app.add_middleware(
 # Include existing API routes
 app.include_router(routes.router)
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(chat_router.router, prefix="/api/v1", tags=["Chat"])
 
 
 @app.get("/")
 def read_root():
     return {"message": "Welcome to DataWhisperer API"}
-
-
-class QuestionRequest(BaseModel):
-    question: str
-
-
-@app.post("/ask")
-async def ask_ai(payload: QuestionRequest):
-    try:
-        answer = ask_whisperer(payload.question)
-        return {"answer": answer}
-    except Exception as e:
-        return {"error": str(e)}
