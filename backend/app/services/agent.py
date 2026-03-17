@@ -13,7 +13,12 @@ def run_agent(question: str) -> str:
     schema = get_database_schema()
     
     # First step: Ask the agent to generate the SQL query
-    system_prompt = f"You are a data assistant. Here is the LIVE schema of the database you are connected to: {schema}. Generate the correct SQL based ONLY on this structure."
+    system_prompt = f"""You are a data assistant. Here is the LIVE schema of the database you are connected to:
+{schema}
+
+When a user asks a question, first output the SQL block, then provide the natural language answer. Always use triple backticks for SQL. 
+For string searches like city names, always use LOWER() and LIKE %keyword% to ensure fuzzy matching (e.g., LOWER(city) LIKE '%rio%').
+Generate the correct SQL based ONLY on this structure."""
     
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
@@ -26,13 +31,6 @@ def run_agent(question: str) -> str:
     )
     
     sql_query = response.choices[0].message.content.strip()
-    
-    # Just in case the model ignored instructions and included markdown
-    if sql_query.startswith("```sql"):
-        sql_query = sql_query[6:]
-    if sql_query.endswith("```"):
-        sql_query = sql_query[:-3]
-    sql_query = sql_query.strip()
     
     try:
         results = run_read_only_query(sql_query)

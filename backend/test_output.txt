@@ -1,0 +1,27 @@
+﻿Error executing query: Only SELECT queries are allowed for security reasons.
+Generated Query: To find the number of customers from each city who gave a 1-star review, we need to join the `customers`, `orders`, and `reviews` tables. Here is the SQL query:
+
+```sql
+SELECT 
+    c.customer_city, 
+    COUNT(DISTINCT c.customer_id) AS num_customers
+FROM 
+    customers c
+JOIN 
+    orders o ON c.customer_id = o.customer_id
+JOIN 
+    reviews r ON o.order_id = r.order_id
+WHERE 
+    r.review_score = 1
+GROUP BY 
+    c.customer_city;
+```
+
+This query works as follows:
+
+1. It joins the `customers`, `orders`, and `reviews` tables based on their respective IDs.
+2. It filters the results to only include reviews with a score of 1.
+3. It groups the results by the customer's city.
+4. It counts the number of distinct customers in each city who gave a 1-star review.
+
+Note that the `COUNT(DISTINCT c.customer_id)` expression is used to count the number of unique customers in each city, in case a customer has given multiple 1-star reviews.
