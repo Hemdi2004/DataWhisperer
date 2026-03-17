@@ -4,7 +4,7 @@ from typing import List
 from app.api.deps import get_db
 from app.models.database_models import Customer, Product, Order, OrderItem, Payment, Review
 from pydantic import BaseModel
-from app.services.whisperer import ask_whisperer as groq_whisperer
+from app.services.agent import run_agent
 
 router = APIRouter()
 
@@ -12,15 +12,15 @@ class UserQuery(BaseModel):
     question: str
 
 @router.post("/ask", tags=["AI Whisperer"])
-async def chat_with_db(query: UserQuery):
+def chat_with_db(query: UserQuery):
     """
     Main entry point for the LLM.
     Takes a natural language question and returns an AI-generated answer
     based on real-time data from your DB.
     """
     try:
-        # Explicitly call the Groq version
-        result = groq_whisperer(query.question)
+        # Call the new agent logic
+        result = run_agent(query.question)
         return {"answer": result}
     except Exception as e:
         # Log the full traceback for debugging

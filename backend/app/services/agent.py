@@ -5,7 +5,7 @@ from app.services.db_tools import get_database_schema, run_read_only_query
 # The client will automatically use the GROQ_API_KEY environment variable.
 client = Groq()
 
-def ask_agent(question: str) -> str:
+def run_agent(question: str) -> str:
     """
     Synchronous agent logic that uses Groq, Llama 3.3 70B, and db_tools
     to generate and execute dynamic SQL based on schema discovery.
@@ -13,15 +13,7 @@ def ask_agent(question: str) -> str:
     schema = get_database_schema()
     
     # First step: Ask the agent to generate the SQL query
-    system_prompt = f"""
-You are an expert SQL assistant. Your goal is to answer the user's question by writing a SQL query.
-You have access to the following database schema:
-
-{schema}
-
-Always return ONLY the valid SQL query, with no markdown formatting (like ```sql), no explanations, and no preamble.
-The query MUST be a SELECT statement. It MUST be valid SQL for the above schema.
-    """
+    system_prompt = f"You are a data assistant. Here is the LIVE schema of the database you are connected to: {schema}. Generate the correct SQL based ONLY on this structure."
     
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
